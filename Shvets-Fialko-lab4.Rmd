@@ -20,10 +20,10 @@ library(EnvStats)
 ### Generating Data
 
 $$
-{a_k} := {kln(k^2n + π)},  k≥1
+{a_k} := \{kln(k^2n + π)\},  k≥1
 $$
 
-Where ${x} := x - [x]$ is a fractional part of a number x, n - id number
+Where $\{x\} := x - [x]$ is a fractional part of a number x, n - id number
 
 $$
    \mathscr{N}(\mu_1,\sigma_1^2) \qquad
@@ -41,7 +41,7 @@ $$
 {y_l} = Ф^{-1}(a_{l+100}), l = 1,...,50
 $$
 
-Where $Ф$ - is the cumulative distribution function of N(0, 1) and $Ф_{-1}$ is inverse
+Where $Ф$ - is the cumulative distribution function of N(0, 1) and $Ф^{-1}$ is inverse
 
 ```{r}
 n =  7
@@ -100,22 +100,65 @@ $\mu_1$ and $\mu_2$ are unknown
 var.test(x, y, alternative="greater", conf.level=0.95) 
 ```
 
-In this problem we need to compare variances of two samples, when the means are unknown. The samples have normal distribution. Herefrom, we can apply $f$-test.
+In this problem we need to compare variances of two samples, when the means are unknown. The samples have normal distribution. Here from, we can apply $f$-test.
 
 Next, we indicate the general form of the rejection region of the test $H_0$ vs $H_1$ of level $0.05$.$$C_\alpha = \{x \in \mathbb{R}^n,\ y \in \mathbb{R}^m | f(x, y) \leq f_{\alpha}\}$$ For $\alpha=0.05$: $C_{0.05} = \{x \in \mathbb{R}^n,\ y \in \mathbb{R}^m | f(x, y) \leq f_{0.05}\}$.
 
 $H_0$ should not be rejected at the significance level of $\alpha = 0.05$.
 
-The $p$-value is $0.746$, which is larger than the level of the rejection region $\alpha = 0.05$; It is significantly big, so we do not reject the hypothesis $H_0$ at the significance level of $\alpha$.
+The $p$-value is $0.1441$, which is larger than the level of the rejection region $\alpha = 0.05$; It is significantly big, so we do not reject the hypothesis $H_0$ at the significance level of $\alpha$.
 
 ### Problem 3:
 
-Using Kolmogorov--Smirnov test in R, check if (a) ${(xk)}_{k=1}^{100}$ are normally distributed (with parameters calculated from the sample);
+In this problem we have to test the hypothesis whether two distributions are the same. That's why it's proper to use here Kolmogorov--Smirnov.
+
+Let's look on the general form of the rejection region of the test $H_0: F_x = F_y$ vs $H_1: F_x \not= F_y$.
+
+We will use statistics $D(X,Y):=\underset{t \in \mathbb{R}}{sup}|\hat{F}_x(t)-F_y(t)|$ and Kolmogorov distribution $\mathscr{D}_n$. Where $F(t)$ is the **cdf** of the corresponding distribution.
+
+And then the rejection region looks like this: $$C_\alpha = \{x \in \mathbb{R}^n | d(x, y) \geq d_{1-\alpha}^{(n)}\}$$ For $\alpha=0.05$: $$C_{0.05} = \{x \in \mathbb{R}^n | d(x, y) \geq d_{0.95}^{(n)}\}$$
+
+The task is to check if:
+
+(a) $\{x_k\}_{k=1}^{100}$ are normally distributed (with parameters calculated from the sample);
+
+(b) $\{|x_k|\}_{k=1}^{100}$ are exponentially distributed with $\lambda = 1$;
+
+(c) $\{x_k\}_{k=1}^{100}$ and $\{y_l\}_{l=1}^{50}$ have the same distributions.
+
+#### a) Test $H_0$: $\{x_k\}^{100}_{k=1} \sim \mathscr{N}(\mu, \sigma^2)$ vs $H_1: \{x_k\}^{100}_{k=1} \not\sim \mathscr{N}(\mu, \sigma^2)$
 
 ```{r}
+mu <- mean(x)
+sd_from_task <- sd(x)
 
+norm.distr <- rnorm(100, mean=mu, sd=sd_from_task)
+ks.test(x=x, y=norm.distr, alternative = "t")
 ```
 
-(a) ${(xk)}_{k=1}^{100}$ are normally distributed (with parameters calculated from the sample);
-(b) ${(|xk|)}_{k=1}^{100}$ are exponentially distributed with λ = 1;
-(c) ${(xk)}_{k=1}^{100}$ and \${y_l}\_{l=1}\^{50}\$ have the same distributions.
+$p$-value of the test is bigger then $0.05$, that's why we should not reject $H_0$ at the significance level of $\alpha = 0.05$.
+
+The $p$-value of our test is $0.6994$. Our $p$-value is not small enough, so we do not reject the hypothesis $H_0$.
+
+#### b) Test $H_0$: $\{x_k\}^{100}_{k=1} \sim \mathscr{E}(1)$ vs $H_1: \{x_k\}^{100}_{k=1} \not\sim \mathscr{E}(1)$
+
+```{r}
+lambda <- 1
+
+exp.distr <- rexp(n=100, rate=lambda)
+ks.test(x=x, y=exp.distr, alternative="t")
+```
+
+$p$-value of the test is really smaller then $0.05$, that's why we may reject $H_0$ at the significance level of $\alpha = 0.05$.
+
+The $p$-value of our test is $4.807e-14$. Our $p$-value is small enough, so we do reject the hypothesis $H_0$.
+
+#### c) Test H_0: $\{x_k\}^{100}_{k=1}$ have the same distribution as $\{y_l\}^{50}_{l=1}$ vs $\{x_k\}^{100}_{k=1}$ have not the same distribution as $\{y_l\}^{50}_{l=1}$
+
+```{r}
+ks.test(x=x, y=y, alternative = "t")
+```
+
+$p$-value of the test is bigger then $0.05$, that's why we should not reject $H_0$ at the significance level of $\alpha = 0.05$.
+
+The $p$-value of our test is $0.6137$. Our $p$-value is somewhat big, so we do not reject the hypothesis $H_0$.
