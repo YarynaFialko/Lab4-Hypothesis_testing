@@ -1,0 +1,87 @@
+---
+title: "Fialko-Shvets-lab4"
+output: html_document
+date: "2022-12-21"
+---
+
+## Team:
+
+-   Shvets Anastasia
+
+-   Fialko Yaryna
+
+### Generating Data
+
+$$
+{a_k} := {kln(k^2n + π)},  k≥1
+$$
+
+Where ${x} := x - [x]$ is a fractional part of a number x, n - id number
+
+$$
+   \mathscr{N}(\mu_1,\sigma_1^2) \qquad
+$$
+
+$$
+{x_k}= Ф^{-1}(a_k), k= 1,...,100
+$$
+
+$$
+   \mathscr{N}(\mu_2,\sigma_2^2) \qquad
+$$
+
+$$
+{y_l} = Ф^{-1}(a_{l+100}), l = 1,...,50
+$$
+
+Where $Ф$ - is the cumulative distribution function of N(0, 1) and $Ф_{-1}$ is inverse
+```{r}
+n =  10
+calculate_a <- function(k) {
+   return(k*log((k^2)*n + pi))
+}
+
+a_list <- list()
+for (i in 1:100) {
+  a_list <- append(a_list, calculate_a(i))
+}
+ay_list <- list()
+for (i in 1:50) {
+  ay_list <- append(ay_list, calculate_a(i+100))
+}
+
+print(ay_list)
+
+```
+
+Problem 1:
+
+$H_0\,: \mu_1 = \mu_2 \quad \textrm{vs} \quad H_1\,: \mu ≠ \mu_0$
+
+$\sigma_1^2 = \sigma_2^2 = 1$
+
+```{r}
+
+```
+
+**We have applied a Z-Test**
+
+A z-test is a statistical test used to determine whether two population means are different when the variances are known and the sample size is large.
+
+### Problem 2:
+
+$H_0\,: \sigma_1^2 = \sigma_2^2 \quad \textrm{vs} \quad H_1\,: \sigma_1^2 > \sigma_2^2$
+
+$\mu_1$ and $\mu_2$ are unknown
+
+### Problem 3:
+
+Using Kolmogorov--Smirnov test in R, check if
+(a) ${(xk)}_{k=1}^{100}$ are normally distributed (with parameters calculated from the sample);
+
+(b) ${(|xk|)}_{k=1}^{100}$ are exponentially distributed with λ = 1;
+(c) ${(xk)}_{k=1}^{100}$ and \${y_l}\_{l=1}\^{50}\$ have the same distributions.
+
+
+
+
