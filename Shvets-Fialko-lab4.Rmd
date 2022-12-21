@@ -10,6 +10,13 @@ date: "2022-12-21"
 
 -   Fialko Yaryna
 
+## Setting up necessary libraries
+
+```{r}
+library(BSDA)
+library(EnvStats)
+```
+
 ### Generating Data
 
 $$
@@ -35,22 +42,30 @@ $$
 $$
 
 Where $Ф$ - is the cumulative distribution function of N(0, 1) and $Ф_{-1}$ is inverse
+
 ```{r}
-n =  10
+n =  7
 calculate_a <- function(k) {
-   return(k*log((k^2)*n + pi))
+  num <- k*log((k^2)*n + pi)
+   return(num - floor(num)) 
 }
 
-a_list <- list()
+a_list <- c()
 for (i in 1:100) {
   a_list <- append(a_list, calculate_a(i))
 }
-ay_list <- list()
+
+ay_list <- c()
 for (i in 1:50) {
   ay_list <- append(ay_list, calculate_a(i+100))
 }
 
-print(ay_list)
+x <- qnorm(a_list, mean = 0, sd = 1)
+
+y <- qnorm(ay_list, mean = 0, sd = 1) 
+
+hist(x)
+hist(y)
 
 ```
 
@@ -61,12 +76,19 @@ $H_0\,: \mu_1 = \mu_2 \quad \textrm{vs} \quad H_1\,: \mu ≠ \mu_0$
 $\sigma_1^2 = \sigma_2^2 = 1$
 
 ```{r}
-
+sigma <- 1
+z.test(x=x, y=y, alternative="t", sigma.x=sigma, sigma.y=sigma, conf.level=0.95)
 ```
 
-**We have applied a Z-Test**
+In this problem we have a known sigma and we need to compare means from two samples that follow normal distribution. Hence, we can apply Z-Test.
 
-A z-test is a statistical test used to determine whether two population means are different when the variances are known and the sample size is large.
+We indicate the rejection region of level $0.05$.
+
+$$C_\alpha = \{x \in \mathbb{R}^n,\ y \in \mathbb{R}^m | |z(x, y)| \geq z_{1-\alpha/2}\}$$For $\alpha=0.05$: $C_{0.05} = \{x \in \mathbb{R}^n,\ y \in \mathbb{R}^m | |z(x, y)| \geq z_{0.975}\}$.
+
+$H_0$ should not be rejected at the significance level of $\alpha = 0.05$
+
+The $p$-value of our test is $0.5065$. $p$-value is larger than the level of the rejection region $\alpha = 0.05$; As it is significantly big, we can not reject the hypothesis $H _0$ significance level of $\alpha$.
 
 ### Problem 2:
 
@@ -74,14 +96,26 @@ $H_0\,: \sigma_1^2 = \sigma_2^2 \quad \textrm{vs} \quad H_1\,: \sigma_1^2 > \sig
 
 $\mu_1$ and $\mu_2$ are unknown
 
+```{r}
+var.test(x, y, alternative="greater", conf.level=0.95) 
+```
+
+In this problem we need to compare variances of two samples, when the means are unknown. The samples have normal distribution. Herefrom, we can apply $f$-test.
+
+Next, we indicate the general form of the rejection region of the test $H_0$ vs $H_1$ of level $0.05$.$$C_\alpha = \{x \in \mathbb{R}^n,\ y \in \mathbb{R}^m | f(x, y) \leq f_{\alpha}\}$$ For $\alpha=0.05$: $C_{0.05} = \{x \in \mathbb{R}^n,\ y \in \mathbb{R}^m | f(x, y) \leq f_{0.05}\}$.
+
+$H_0$ should not be rejected at the significance level of $\alpha = 0.05$.
+
+The $p$-value is $0.746$, which is larger than the level of the rejection region $\alpha = 0.05$; It is significantly big, so we do not reject the hypothesis $H_0$ at the significance level of $\alpha$.
+
 ### Problem 3:
 
-Using Kolmogorov--Smirnov test in R, check if
-(a) ${(xk)}_{k=1}^{100}$ are normally distributed (with parameters calculated from the sample);
+Using Kolmogorov--Smirnov test in R, check if (a) ${(xk)}_{k=1}^{100}$ are normally distributed (with parameters calculated from the sample);
 
+```{r}
+
+```
+
+(a) ${(xk)}_{k=1}^{100}$ are normally distributed (with parameters calculated from the sample);
 (b) ${(|xk|)}_{k=1}^{100}$ are exponentially distributed with λ = 1;
 (c) ${(xk)}_{k=1}^{100}$ and \${y_l}\_{l=1}\^{50}\$ have the same distributions.
-
-
-
-
